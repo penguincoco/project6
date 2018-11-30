@@ -1,0 +1,62 @@
+- Currently last element is length 5.
+- Right now not adding the very first location (in the entire file, the first location of 180). 
+
+
+
+
+
+if (this.title.toLowerCase().equals(otherMovie.getTitle().toLowerCase())) {
+			if (this.year == otherMovie.getYear()) {
+				return 0;
+			}
+			else if (this.year > otherMovie.getYear()) {
+				return 1;
+			}
+			else {
+				return -1;
+			}
+		}
+		//doesn't matter if the title is longer or shorter, either way they aren't the same movie
+		else if (!this.title.toLowerCase().equals(otherMovie.getTitle().toLowerCase())) {
+			return 1;
+		}
+		else {
+			return -1;
+		}
+	}
+
+
+
+
+
+
+
+
+if (listOfMovies.size() == 0) {
+				listOfMovies.add(thisMovie);
+			}
+			else if (listOfMovies.size() != 0) {
+				for (Movie m : listOfMovies) {
+					if (m.equals(thisMovie)) {
+						Location currentLocation = new Location(movieLocation, movieFunFact);
+						m.addLocation(currentLocation);
+						break;
+					}
+				}
+			}
+			else {
+				listOfMovies.add(thisMovie);
+			}
+
+
+
+
+What’s left to do for Game Dev? 
+
+- Two more duck sprites to simulate motion 
+
+
+Additions brainstorm: 
+- Add Yvaine sprite to the game, change the background and make it all Queen’s Galaxy themed? :D
+
+- Add power ups to the game? So duck can gain the ability to shoot projectiles, be invincible (temporarily), steal a point from the other player? 
