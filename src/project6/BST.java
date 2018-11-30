@@ -1,14 +1,15 @@
 package project6;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
 
+import project6.BST.BSTNode;
 import project6.LinkedList.MyIterator;
 import project6.LinkedList.Node;
 
 public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E> {
-//public class BST<E> implements Comparable<E>, Collection<E>, Iterable<E> {
 	private int size;
 	private BSTNode<E> root; 
 	
@@ -44,43 +45,29 @@ public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E>
 	class BSTIterator<E extends Comparable<E>> implements Iterator<E> {
 		BSTNode<E> pointer;
 		Stack<BSTNode<E>> iteratorStack; 
+		E[] iteratorArray;
+		int index = 0; 
 		
-		//what the fuck why does this work if I give it a parameter
-		public BSTIterator(BSTNode<E> root) {
-			iteratorStack = new Stack<>();
-			this.pointer = root; 
-			
-			if (this.pointer != null) {
-				iteratorStack.push(this.pointer);
-			}
+		public BSTIterator(E[] array) {
+			this.iteratorArray = array;
+//			iteratorStack = new Stack<>();
+//			this.pointer = (BSTNode<E>) root; 
 		}
 		
 		@Override
 		public boolean hasNext() {
-			if (pointer.left != null) {
-				iteratorStack.push(pointer.right); 
-				pointer = pointer.left;
+			if (index < iteratorArray.length) {
+				return false; 
+			}
+			else {
 				return true; 
 			}
-			return false;
 		}
 
 		@Override
 		public E next() {
-			if (!hasNext()) {
-				return null; 
-			}
-			
-			E currentData = pointer.getData();
-			
-			if (pointer.left != null) {
-				pointer = pointer.left; 
-			}
-			else {
-				pointer = iteratorStack.pop();
-			}
-			
-			return currentData; 
+			index++;
+			return iteratorArray[index - 1];
 		}
 	}
 	
@@ -193,10 +180,21 @@ public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E>
 			return false; 
 		}
 	}
-
+	
 	@Override
 	public BSTIterator<E> iterator() {
-		// TODO Auto-generated method stub
+		E[] inorderArray = (E[])new Object[size]; 
+		BSTIterator<E> inorderIterator = new BSTIterator(iteratorHelper(root));
+		return inorderIterator;
+	}
+	
+	public E[] iteratorHelper(BSTNode<E> root) {
+		if (root == null) {
+			return null;
+		}
+		iteratorHelper(root.left);
+		list.add(root.element);
+	      inorder(root.right);
 		return null;
 	}
 	
