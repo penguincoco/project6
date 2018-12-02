@@ -5,13 +5,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
 
-import project6.BST.BSTNode;
-import project6.LinkedList.MyIterator;
-import project6.LinkedList.Node;
-
-public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E> {
+public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> {
 	private int size;
 	private BSTNode<E> root; 
+	
+	public static void main(String[] args) {
+		System.out.println("running BST");
+	}
 	
 	//private, internal BSTNode class
 	static class BSTNode<E extends Comparable<E>> implements Comparable<BSTNode<E>> {
@@ -45,18 +45,32 @@ public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E>
 	class BSTIterator<E extends Comparable<E>> implements Iterator<E> {
 		BSTNode<E> pointer;
 		Stack<BSTNode<E>> iteratorStack; 
-		E[] iteratorArray;
+		ArrayList<E> iteratorArrayList;
 		int index = 0; 
 		
-		public BSTIterator(E[] array) {
-			this.iteratorArray = array;
-//			iteratorStack = new Stack<>();
-//			this.pointer = (BSTNode<E>) root; 
+		public BSTIterator() {
+			iteratorStack = new Stack<>();
+			
+			iteratorArrayList = new ArrayList<E>();
+			this.pointer = (BSTNode<E>) root;
+			iteratorStack.push(pointer);
+			
+			preorder(pointer);
+		}
+		
+		public void preorder(BSTNode<E> node) {
+			if (node == null) {
+				return; 
+			}
+			iteratorArrayList.add(node.data);
+			index++; 
+			preorder(node.left);
+			preorder(node.right);
 		}
 		
 		@Override
 		public boolean hasNext() {
-			if (index < iteratorArray.length) {
+			if (index < iteratorArrayList.size()) {
 				return false; 
 			}
 			else {
@@ -67,8 +81,30 @@ public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E>
 		@Override
 		public E next() {
 			index++;
-			return iteratorArray[index - 1];
+			return iteratorArrayList.get(index - 1);
 		}
+		
+//		public BSTIterator(E[] array) {
+//			this.iteratorArray = a
+//			iteratorStack = new Stack<>();
+//			this.pointer = (BSTNode<E>) root;
+//		}
+//		
+//		@Override
+//		public boolean hasNext() {
+//			if (index < iteratorArray.length) {
+//				return false; 
+//			}
+//			else {
+//				return true; 
+//			}
+//		}
+//
+//		@Override
+//		public E next() {
+//			index++;
+//			return iteratorArray[index - 1];
+//		}
 	}
 	
 	/**
@@ -182,21 +218,28 @@ public class BST< E extends Comparable<E>> implements Collection<E>, Iterable<E>
 	}
 	
 	@Override
-	public BSTIterator<E> iterator() {
-		E[] inorderArray = (E[])new Object[size]; 
-		BSTIterator<E> inorderIterator = new BSTIterator(iteratorHelper(root));
-		return inorderIterator;
-	}
-	
-	public E[] iteratorHelper(BSTNode<E> root) {
-		if (root == null) {
-			return null;
-		}
-		iteratorHelper(root.left);
-		list.add(root.element);
-	      inorder(root.right);
+	public Iterator<E> iterator() {
 		return null;
 	}
+//		E[] inorderArray = (E[])new Object[size];
+//		int index = 0; 
+//		
+//		iteratorHelper(root, inorderArray, index); 
+//		
+//		return new BSTIterator<E>(inorderArray);
+//	}
+//	
+//	private void iteratorHelper(BSTNode<E> root, E[] inorderArray, int index) {
+//		if (root == null) {
+//			return; 
+//		}
+//		
+//		iteratorHelper(root.left, inorderArray, index); 
+//		
+//		inorderArray[index++] = root.getData();
+//		
+//		iteratorHelper(root.right, inorderArray, index);
+//	}
 	
 	public Iterator<E> preorderIterator() {
 		return null;
