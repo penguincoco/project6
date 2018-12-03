@@ -42,13 +42,13 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	
 	//private, internal Iterator class
 	//preorder traversal: Root first, left subtree, right subtree
-	class BSTIterator<E extends Comparable<E>> implements Iterator<E> {
+	private class PreorderBSTIterator<E extends Comparable<E>> implements Iterator<E> {
 		BSTNode<E> pointer;
 		Stack<BSTNode<E>> iteratorStack; 
 		ArrayList<E> iteratorArrayList;
 		int index = 0; 
 		
-		public BSTIterator() {
+		public PreorderBSTIterator() {
 			iteratorStack = new Stack<>();
 			
 			iteratorArrayList = new ArrayList<E>();
