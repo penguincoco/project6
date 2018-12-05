@@ -258,8 +258,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	}
 	
 	private boolean addHelper(E arg0, BSTNode<E> pointer) {
-		if (pointer.getData().equals(arg0)) {
-//		if (pointer.getData().compareTo(arg0) == 0) {
+		if (pointer.getData().compareTo(arg0) == 0) {
 			return false; 
 		}
 		else if (pointer.getData().compareTo(arg0) > 0) {
@@ -408,94 +407,90 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 		return new PostorderBSTIterator<E>();
 	}
 
-//	@Override
 	@Override
 	public boolean remove(Object arg0) {
-		return false;
+		//pointer is what we have to remove
+		//previous is parent of pointer
+		BSTNode<E> previous = root;
+		BSTNode<E> pointer = root;
+		while(!pointer.data.equals(arg0)) {
+			if (pointer.getData().compareTo((E) arg0) > 0) {
+				previous = pointer; 
+				pointer = pointer.left; 
+			}
+			else {
+				previous = pointer;
+				pointer = pointer.right;
+			}
+		}
+		
+		//LOTS OF THIS STUFF SHOULD JUST BE PREVIOUS, NOT POINTER! POINTER IS WHAT WE REMOVE
+		if (pointer.left != null && pointer.right != null) {
+			//left stuff to give back and right stuff to give back
+			BSTNode<E> leftChild = pointer.left;
+			BSTNode<E> rightChild = pointer.right;
+			//rightmost, and rightmost parent
+			BSTNode<E> newNode = pointer.left;
+			BSTNode<E> newParent = pointer.left; 
+			
+			while (newNode.right != null) {
+				//set rightmost and rightmost parent
+				newParent = newNode;
+				newNode = newNode.right;
+			}
+			
+			if(newParent.equals(newNode)) {
+				//if they are equal, we did not move right at all!
+				
+				//make pointer equal to the left child
+				pointer.data = newNode.data;
+				//make pointer point to left left
+				pointer.left = pointer.left.left;
+				//give pointer right
+				pointer.right = rightChild;
+				return true;
+			}
+			else {
+				//there is a left right
+				pointer.data = newNode.data;
+				//set top to right most
+				newParent.right = null;
+				//get rid of right most
+				pointer.left = leftChild;
+				pointer.right = rightChild;
+				//give back left and right 
+				return true;
+			}
+		}
+		else {
+			if (previous.left == null) {
+				if (pointer.left == null) {
+					previous.right = pointer.right;
+					size--;
+					return true;
+				} 
+				
+				else {
+					previous.right = pointer.left;
+					size--;
+					return true;
+				}
+			} 
+			
+			else {
+				if (pointer.left == null) {
+					previous.left = pointer.right;
+					size--;
+					return true;
+				} 
+				else {
+					previous.left = pointer.left;
+					size--;
+					return true;
+				}
+			}
+		}
 	}
-//	public boolean remove(Object arg0) {
-//		//pointer is what we have to remove
-//		//previous is parent of pointer
-//		BSTNode<E> previous = root;
-//		BSTNode<E> pointer = root;
-//		while(!pointer.data.equals(arg0)) {
-//			if (pointer.getData().compareTo((E) arg0) > 0) {
-//				previous = pointer; 
-//				pointer = pointer.left; 
-//			}
-//			else {
-//				previous = pointer;
-//				pointer = pointer.right;
-//			}
-//		}
-		
-		
-//		if (pointer.left != null && pointer.right != null) {
-//			//left stuff to give back and right stuff to give back
-//			BSTNode<E> leftChild = pointer.left;
-//			BSTNode<E> rightChild = pointer.right;
-//			//rightmost, and rightmost parent
-//			BSTNode<E> newNode = pointer.left;
-//			BSTNode<E> newParent = pointer.left; 
-//			
-//			while (newNode.right != null) {
-//				//set rightmost and rightmost parent
-//				newParent = newNode;
-//				newNode = newNode.right;
-//			}
-//			
-//			if(newParent.equals(newNode)) {
-//				//if they are equal, we did not move right at all!
-//				
-//				//make pointer equal to the left child
-//				pointer.data = newNode.data;
-//				//make pointer point to left left
-//				pointer.left = pointer.left.left;
-//				//give pointer right
-//				pointer.right = rightChild;
-//				return true;
-//			}
-//			else {
-//				//there is a left right
-//				pointer.data = newNode.data;
-//				//set top to right most
-//				newParent.right = null;
-//				//get rid of right most
-//				pointer.left = leftChild;
-//				pointer.right = rightChild;
-//				//give back left and right 
-//				return true;
-//			}
-//		}
-//		else {
-//			if (previous.left == null) {
-//				if (pointer.left == null) {
-//					previous.right = pointer.right;
-//					size--;
-//					return true;
-//				} 
-//				
-//				else {
-//					previous.right = pointer.left;
-//					size--;
-//					return true;
-//				}
-//			} 
-//			
-//			else {
-//				if (pointer.left == null) {
-//					previous.left = pointer.right;
-//					size--;
-//					return true;
-//				} 
-//				else {
-//					previous.left = pointer.left;
-//					size--;
-//					return true;
-//				}
-//			}
-//		}
-//	}
 
 	
 	@Override

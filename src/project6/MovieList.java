@@ -34,8 +34,6 @@ public class MovieList extends BST<Movie> {
 		
 		//iterate through the movies in the list
 		for (Movie m : this ) {
-			System.out.println("Query: " + movieName);
-			System.out.println("Currently looking at: " + m.getTitle());
 			if (m.getTitle().toLowerCase().contains(movieName.toLowerCase())) {
 				matchingMovieTitles.add(m);
 			}
@@ -46,6 +44,7 @@ public class MovieList extends BST<Movie> {
 		if (matchingMovieTitles.isEmpty()) {
 			return null;
 		}
+		
 		//return a sorted list of movies
 		return matchingMovieTitles; 
 	}
@@ -78,24 +77,6 @@ public class MovieList extends BST<Movie> {
 				}
 			}
 		}
-		
-//		MyIterator<Movie> actorIterator = this.iterator();
-//		
-//		while (actorIterator.hasNext()) {
-//			Movie thisMovie = actorIterator.next();
-//			
-//			for (int i = 0; i < thisMovie.getActors().size(); i++) {
-//				if (thisMovie.getActors().get(i).getActorName().contains(actorName)){
-//					matchingActors.add(thisMovie);
-//				}
-//			}
-//		}
-		
-//		//sort the actors
-//		matchingActors.sort();
-//		if (matchingActors.isEmpty()) {
-//			return null;
-//		}
 		
 		//return the sorted ArrayList of actors
 		return matchingActors; 

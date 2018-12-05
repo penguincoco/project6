@@ -157,11 +157,6 @@ public class SFMovieData {
 			}
 		}
 		
-//		System.out.println(movieBST.size());
-//		for (Movie m : movieBST) {
-//			System.out.println("Title: " + m.getTitle());
-//		}
-		
 		//create a scanner to read user input
 		Scanner input = new Scanner(System.in);
 		boolean keepGoing = true; 
