@@ -8,7 +8,8 @@ import java.util.stream.Stream;
 
 public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> {
 	private int size;
-	private BSTNode<E> root; 
+	private BSTNode<E> root;
+	private boolean found;
 	
 	public static void main(String[] args) {
 		System.out.println("running BST");
@@ -53,8 +54,6 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			this.pointer = (BSTNode<E>) root;
 			
 			preorder(pointer);
-			
-			index = 0;
 		}
 		
 		public void preorder(BSTNode<E> node) {
@@ -62,7 +61,6 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 				return; 
 			}
 			iteratorArrayList.add(node.data);
-			index++; 
 			preorder(node.left);
 			preorder(node.right);
 		}
@@ -94,8 +92,6 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			this.pointer = (BSTNode<E>) root;
 			
 			postorder(pointer);
-			
-			index = 0;
 		}
 		
 		public void postorder(BSTNode<E> node) {
@@ -104,7 +100,6 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			}
 			postorder(node.left);
 			postorder(node.right);
-			index++; 
 			iteratorArrayList.add(node.data);
 		}
 		
@@ -126,17 +121,13 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	}
 	
 	class MyIterator<E extends Comparable<E>> implements Iterator<E> {
-		BSTNode<E> pointer;
 		ArrayList<E> iteratorArrayList;
 		int index = 0; 
 		
 		public MyIterator() {
 			iteratorArrayList = new ArrayList<E>();
-			this.pointer = (BSTNode<E>) root;
 			
-			inorder(pointer);
-			
-			index = 0;
+			inorder((BSTNode<E>) root);
 		}
 		
 		public void inorder(BSTNode<E> node) {
@@ -146,7 +137,6 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			inorder(node.left);
 			iteratorArrayList.add(node.data);
 			inorder(node.right);
-			index++; 
 		}
 		
 		@Override
@@ -257,30 +247,41 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 		if (arg0 == null) {
 			return false; 
 		}
-		root = addHelper(arg0, root);
 		
-		return true;
+		if (this.isEmpty()) {
+			root = new BSTNode<E>(arg0);
+			size++;
+			return true;
+		}
+		
+		return addHelper(arg0, root);
 	}
 	
-	private BSTNode<E> addHelper(E arg0, BSTNode<E> pointer) {
-		//create a new node and make it the root if the tree is empty
-		if (root == null) {
-			size += 1; 
-			return new BSTNode<E>(arg0);
+	private boolean addHelper(E arg0, BSTNode<E> pointer) {
+		if (pointer.getData().equals(arg0)) {
+//		if (pointer.getData().compareTo(arg0) == 0) {
+			return false; 
 		}
-		
-		//don't allow equal elements; 
-		if (pointer.data.equals(arg0)) {
-			return root;
-		}
-		else if (root.data.compareTo(arg0) < 0) {
-			root.right = addHelper(arg0, root.right);
+		else if (pointer.getData().compareTo(arg0) > 0) {
+			if (pointer.left == null) {
+				pointer.left = new BSTNode<E>(arg0);
+				size++;
+				return true;
+			}
+			else {
+				return addHelper(arg0, pointer.left);
+			}
 		}
 		else {
-			root.left = addHelper(arg0, root.left);
+			if (pointer.right == null) {
+				pointer.right = new BSTNode<E>(arg0);
+				size++;
+				return true;
+			}
+			else {
+				return addHelper(arg0, pointer.right);
+			}
 		}
-		
-		return root;
 	}
 
 	@Override
@@ -291,6 +292,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	@Override
 	public void clear() {
 		root = null; 
+		size = 0;
 	}
 	/**
 	 * @param Object arg0
@@ -305,9 +307,8 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 		}
 		
 		E arg0Cast = (E)arg0; //this line might throw an exception 
-		BSTNode<E> pointer = root; 
 		
-		return containsHelper(arg0Cast, pointer);
+		return containsHelper(arg0Cast, root);
 	}
 	
 	/**
@@ -323,11 +324,11 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			return false; 
 		}
 		
-		if (arg0.compareTo(pointer.data) < 0) {
-			return containsHelper(arg0, pointer.right);
-		} 
-		else if (arg0.compareTo(pointer.data) > 0) {
+		if (pointer.getData().compareTo(arg0) > 0) {
 			return containsHelper(arg0, pointer.left);
+		} 
+		else if (pointer.getData().compareTo(arg0) < 0) {
+			return containsHelper(arg0, pointer.right);
 		}
 		else {
 			return true; 
@@ -407,21 +408,95 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 		return new PostorderBSTIterator<E>();
 	}
 
+//	@Override
 	@Override
 	public boolean remove(Object arg0) {
-		if (arg0 == null) {
-			return false; 
-		}
-		
-		E arg0Cast = (E)arg0; //this throws an exception
-		BSTNode<E> pointer = root; 
-		
-		return true;
+		return false;
 	}
-
-//	private boolean removeHelper(E arg0, BSTNode<E> pointer) {
-//		s
+//	public boolean remove(Object arg0) {
+//		//pointer is what we have to remove
+//		//previous is parent of pointer
+//		BSTNode<E> previous = root;
+//		BSTNode<E> pointer = root;
+//		while(!pointer.data.equals(arg0)) {
+//			if (pointer.getData().compareTo((E) arg0) > 0) {
+//				previous = pointer; 
+//				pointer = pointer.left; 
+//			}
+//			else {
+//				previous = pointer;
+//				pointer = pointer.right;
+//			}
+//		}
+		
+		
+//		if (pointer.left != null && pointer.right != null) {
+//			//left stuff to give back and right stuff to give back
+//			BSTNode<E> leftChild = pointer.left;
+//			BSTNode<E> rightChild = pointer.right;
+//			//rightmost, and rightmost parent
+//			BSTNode<E> newNode = pointer.left;
+//			BSTNode<E> newParent = pointer.left; 
+//			
+//			while (newNode.right != null) {
+//				//set rightmost and rightmost parent
+//				newParent = newNode;
+//				newNode = newNode.right;
+//			}
+//			
+//			if(newParent.equals(newNode)) {
+//				//if they are equal, we did not move right at all!
+//				
+//				//make pointer equal to the left child
+//				pointer.data = newNode.data;
+//				//make pointer point to left left
+//				pointer.left = pointer.left.left;
+//				//give pointer right
+//				pointer.right = rightChild;
+//				return true;
+//			}
+//			else {
+//				//there is a left right
+//				pointer.data = newNode.data;
+//				//set top to right most
+//				newParent.right = null;
+//				//get rid of right most
+//				pointer.left = leftChild;
+//				pointer.right = rightChild;
+//				//give back left and right 
+//				return true;
+//			}
+//		}
+//		else {
+//			if (previous.left == null) {
+//				if (pointer.left == null) {
+//					previous.right = pointer.right;
+//					size--;
+//					return true;
+//				} 
+//				
+//				else {
+//					previous.right = pointer.left;
+//					size--;
+//					return true;
+//				}
+//			} 
+//			
+//			else {
+//				if (pointer.left == null) {
+//					previous.left = pointer.right;
+//					size--;
+//					return true;
+//				} 
+//				else {
+//					previous.left = pointer.left;
+//					size--;
+//					return true;
+//				}
+//			}
+//		}
 //	}
+
 	
 	@Override
 	public boolean removeAll(Collection<?> arg0) {
@@ -442,8 +517,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	public Object[] toArray() {
 		MyIterator<E> toArrayIterator = this.iterator();
 		
-		@SuppressWarnings("unchecked")
-		Object[] returnArray = (E[])new Object[size];
+		Object[] returnArray = new Object[size];
 		int index = 0; 
 		
 		while (toArrayIterator.hasNext()) {
@@ -456,13 +530,23 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 
 	@Override
 	public <T> T[] toArray(T[] arg0) {
-		// TODO Auto-generated method stub
+		//This was taken from the Java LinkedList implementation 
+		 if (arg0.length < size) 
+		 {
+			 arg0 = (T[])java.lang.reflect.Array.newInstance(arg0.getClass().getComponentType(), size);
+		 }
+		 //end of what was taken from Java LinkedList implementation 
+		 
 		return null;
 	}
 	
 	//Returns the least element in this set greater than or equal to the given element, 
 	//or null if there is no such element.
 	public E ceiling (E e) {
+		if (e == null) {
+			return null;
+		}
+		
 		MyIterator<E> ceilingIterator = this.iterator();
 		
 		while (ceilingIterator.hasNext()) {
@@ -493,6 +577,10 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	}
 	
 	public E floor(E e) {
+		if (e == null) {
+			return null;
+		}
+		
 		MyIterator<E> floorIterator = this.iterator();
 		
 		while (floorIterator.hasNext()) {
@@ -506,6 +594,10 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	}
 	
 	public E higher(E e) {
+		if (e == null) {
+			return null;
+		}
+		
 		MyIterator<E> higherIterator = this.iterator();
 		
 		while (higherIterator.hasNext()) {
@@ -534,6 +626,10 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	}
 	
 	public E lower(E e) {
+		if (e == null) {
+			return null;
+		}
+		
 		MyIterator<E> lowerIterator = this.iterator();
 		
 		while (lowerIterator.hasNext()) {

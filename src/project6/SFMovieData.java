@@ -128,7 +128,6 @@ public class SFMovieData {
 				}
 				catch (IllegalArgumentException e) 
 				{
-					//actor3 = null;
 				}
 			}
 			
@@ -142,40 +141,27 @@ public class SFMovieData {
 				}
 				catch (IllegalArgumentException e) 
 				{
-					//actor3 = null;
 				}
 			}
-			
 			Movie thisMovie = new Movie(movieTitle, movieYearInt, movieDirector, movieWriter, actor1, actor2, actor3);
-			Movie alreadyInListMovie = null;
-			
-			if (movieBST.size() == 0) {
-				movieBST.add(thisMovie);
-			}
-			else if (movieBST.size() != 0) {
-				MovieList.MyIterator<Movie> currentMovies = movieBST.iterator();
-				
-				while (currentMovies.hasNext()) {
-					Movie tempMovie = currentMovies.next();
-					if (tempMovie.equals(thisMovie)) {
-						alreadyInListMovie = tempMovie;
-						break;
-					}
-				}
-				
-				if (alreadyInListMovie != null) {
-					Location currentLocation = new Location(movieLocation, movieFunFact);
-					alreadyInListMovie.addLocation(currentLocation);
-				}
-				else {
-					movieBST.add(thisMovie);
-					Location currentLocation = new Location(movieLocation, movieFunFact);
-					thisMovie.addLocation(currentLocation);
-				}
-			}
-			
-		}
+			Movie alreadyInListMovie = movieBST.get(thisMovie);
 
+			if (alreadyInListMovie != null) {
+			  Location currentLocation = new Location(movieLocation, movieFunFact);
+			  alreadyInListMovie.addLocation(currentLocation);
+			} 
+			else {
+			  movieBST.add(thisMovie);
+			  Location currentLocation = new Location(movieLocation, movieFunFact);
+			  thisMovie.addLocation(currentLocation);
+			}
+		}
+		
+//		System.out.println(movieBST.size());
+//		for (Movie m : movieBST) {
+//			System.out.println("Title: " + m.getTitle());
+//		}
+		
 		//create a scanner to read user input
 		Scanner input = new Scanner(System.in);
 		boolean keepGoing = true; 
@@ -204,6 +190,10 @@ public class SFMovieData {
 			if (splitInput.length < 2) {
 				System.out.println("This is not a valid query. Try again.");
 				continue;
+			}
+			
+			if (!splitInput[0].equalsIgnoreCase("title") && !splitInput[0].equalsIgnoreCase("actor")) {
+				System.out.println("This is not a valid query. Try again.");
 			}
 			
 			String searchType = splitInput[0].toLowerCase();

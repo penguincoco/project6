@@ -10,7 +10,7 @@ package project6;
 public class Actor {
 	private String name; 
 	
-	public Actor (String name) {
+	public Actor (String name) throws IllegalArgumentException {
 		//throw an illegal argument exception if called with null or empty string parameter 
 		if (name == null || name.length() == 0) {
 			throw new IllegalArgumentException("Invalid name!");

@@ -56,8 +56,14 @@ public class Movie implements Comparable<Movie> {
 		}
 		else {
 			actors.add(actor1);
-			actors.add(actor2);
-			actors.add(actor3);
+			
+			if (actor2 != null) {
+				actors.add(actor2);
+			}
+			
+			if (actor3 != null) {
+				actors.add(actor3);
+			}
 		}
 		
 		this.title = title; 
