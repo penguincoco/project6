@@ -10,7 +10,7 @@ package project6;
 
 //import java.util.Collections;
 
-public class MovieList extends LinkedList<Movie> {
+public class MovieList extends BST<Movie> {
 
 	/**
 	 * Iterates through the list of movies to check if any movies match
@@ -34,26 +34,16 @@ public class MovieList extends LinkedList<Movie> {
 		
 		//iterate through the movies in the list
 //		for (Movie m : this )
-		for (int i = 0;i < this.size(); i++) 
-		{
-			//get each movie's title
-			//String movie = m.getTitle();
-			String movie = this.get(i).getTitle();
-			
-			//if title is null, skip it
-			if (movie == null) 
-			{
-				continue;
-			}
-			
-			//otherwise, add the movie to the movielist
-			if (movie.toLowerCase().contains(movieName.toLowerCase()))
-			{
-				matchingMovieTitles.add(this.get(i));
+		MyIterator<Movie> movieIterator = this.iterator();
+		
+		while (movieIterator.hasNext()) {
+			Movie thisMovie = movieIterator.next();
+			if (thisMovie.getTitle().equals(movieName)) {
+				matchingMovieTitles.add(thisMovie);
 			}
 		}
 		
-		matchingMovieTitles.sort();
+//		matchingMovieTitles.sort();
 		
 		if (matchingMovieTitles.isEmpty()) {
 			return null;
@@ -83,35 +73,23 @@ public class MovieList extends LinkedList<Movie> {
 		//create a list to store the matching actors found 
 		MovieList matchingActors = new MovieList();
 		
-		//for (Movie m : this ) 
-		for (int i = 0; i < this.size(); i++)
-		{
-			//for every actor in the list 
-			//for (Actor a : m.getActors()) 
-			for (int j = 0; j < this.get(i).getActors().size(); j++) 
-			{
-				if (this.get(i).getActors().get(j) == null) 
-				{
-					continue; 
-				}
-				//look at their name 
-				String actor = this.get(i).getActors().get(j).getActorName();
-				//String actor = a.getActorName();
-				
-				//if name is null, skip it
-				
-				if (actor.toLowerCase().contains(actorName.toLowerCase()))
-				{
-					matchingActors.add(this.get(i));
+		MyIterator<Movie> actorIterator = this.iterator();
+		
+		while (actorIterator.hasNext()) {
+			Movie thisMovie = actorIterator.next();
+			
+			for (int i = 0; i < thisMovie.getActors().size(); i++) {
+				if (thisMovie.getActors().get(i).getActorName().contains(actorName)){
+					matchingActors.add(thisMovie);
 				}
 			}
 		}
 		
-		//sort the actors
-		matchingActors.sort();
-		if (matchingActors.isEmpty()) {
-			return null;
-		}
+//		//sort the actors
+//		matchingActors.sort();
+//		if (matchingActors.isEmpty()) {
+//			return null;
+//		}
 		
 		//return the sorted ArrayList of actors
 		return matchingActors; 

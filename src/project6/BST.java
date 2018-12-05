@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.stream.Stream;
 
 public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> {
 	private int size;
@@ -42,20 +43,18 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	
 	//private, internal Iterator class
 	//preorder traversal: Root first, left subtree, right subtree
-	private class PreorderBSTIterator<E extends Comparable<E>> implements Iterator<E> {
+	class PreorderBSTIterator<E extends Comparable<E>> implements Iterator<E> {
 		BSTNode<E> pointer;
-		Stack<BSTNode<E>> iteratorStack; 
 		ArrayList<E> iteratorArrayList;
 		int index = 0; 
 		
 		public PreorderBSTIterator() {
-			iteratorStack = new Stack<>();
-			
 			iteratorArrayList = new ArrayList<E>();
 			this.pointer = (BSTNode<E>) root;
-			iteratorStack.push(pointer);
 			
 			preorder(pointer);
+			
+			index = 0;
 		}
 		
 		public void preorder(BSTNode<E> node) {
@@ -71,10 +70,10 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 		@Override
 		public boolean hasNext() {
 			if (index < iteratorArrayList.size()) {
-				return false; 
+				return true; 
 			}
 			else {
-				return true; 
+				return false; 
 			}
 		}
 
@@ -83,28 +82,88 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			index++;
 			return iteratorArrayList.get(index - 1);
 		}
+	}
+	
+	class PostorderBSTIterator<E extends Comparable<E>> implements Iterator<E> {
+		BSTNode<E> pointer;
+		ArrayList<E> iteratorArrayList;
+		int index = 0; 
 		
-//		public BSTIterator(E[] array) {
-//			this.iteratorArray = a
-//			iteratorStack = new Stack<>();
-//			this.pointer = (BSTNode<E>) root;
-//		}
-//		
-//		@Override
-//		public boolean hasNext() {
-//			if (index < iteratorArray.length) {
-//				return false; 
-//			}
-//			else {
-//				return true; 
-//			}
-//		}
-//
-//		@Override
-//		public E next() {
-//			index++;
-//			return iteratorArray[index - 1];
-//		}
+		public PostorderBSTIterator() {
+			iteratorArrayList = new ArrayList<E>();
+			this.pointer = (BSTNode<E>) root;
+			
+			postorder(pointer);
+			
+			index = 0;
+		}
+		
+		public void postorder(BSTNode<E> node) {
+			if (node == null) {
+				return; 
+			}
+			postorder(node.left);
+			postorder(node.right);
+			index++; 
+			iteratorArrayList.add(node.data);
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (index < iteratorArrayList.size()) {
+				return true; 
+			}
+			else {
+				return false; 
+			}
+		}
+
+		@Override
+		public E next() {
+			index++;
+			return iteratorArrayList.get(index - 1);
+		}
+	}
+	
+	class MyIterator<E extends Comparable<E>> implements Iterator<E> {
+		BSTNode<E> pointer;
+		ArrayList<E> iteratorArrayList;
+		int index = 0; 
+		
+		public MyIterator() {
+			iteratorArrayList = new ArrayList<E>();
+			this.pointer = (BSTNode<E>) root;
+			
+			inorder(pointer);
+			
+			index = 0;
+		}
+		
+		public void inorder(BSTNode<E> node) {
+			if (node == null) {
+				return; 
+			}
+			inorder(node.left);
+			iteratorArrayList.add(node.data);
+			inorder(node.right);
+			index++; 
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (index < iteratorArrayList.size()) {
+				return true; 
+			}
+			else {
+				return false; 
+			}
+		}
+
+		@Override
+		public E next() {
+			index++;
+			return iteratorArrayList.get(index - 1);
+		}
 	}
 	
 	/**
@@ -142,66 +201,184 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	 * @return String - a string representation of this collection
 	 */
 	public String toString() {
+		if (root == null) {
+			return "";
+		}
 		
-		return ""; 
+		return toStringHelper(root);
 	}
 	
-//	public String toStringTreeFormat() {
-//		
-//	}
+	private String toStringHelper(BSTNode<E> pointer) {
+		if (pointer == null) {
+			return "";
+		}
+		else {
+			return toStringHelper(pointer.left) + toStringHelper(pointer.right);
+		}
+	}
+	//don't forget to document that this was taken from the specs
+	public String toStringTreeFormat() {
+		StringBuilder s = new StringBuilder();
+		preOrderPrint(root, 0, s);
+		return s.toString();
+	}
+
+	//don't forget to document that this was taken from the specs
+	private void preOrderPrint(BSTNode<E> tree, int level, StringBuilder output) {
+		if (tree != null) {
+			String spaces = "\n";
+			if (level > 0) {
+				for (int i = 0; i < level - 1; i++) {
+					spaces += " ";
+				}
+				spaces += "|--";
+			}
+			output.append(spaces);
+			output.append(tree.data);
+			preOrderPrint(tree.left, level + 1, output);
+			preOrderPrint(tree.right, level + 1, output);
+		} 
+		else { 
+			String spaces = "\n";
+			if (level > 0) {
+				for (int i = 0; i < level - 1; i++) {
+					spaces += " ";
+				}
+				spaces += "|--";
+			}
+			output.append(spaces);
+			output.append("null");
+		}
+	}
 	
 	
 	@Override
 	public boolean add(E arg0) {
+		if (arg0 == null) {
+			return false; 
+		}
+		root = addHelper(arg0, root);
 		
-		return false;
+		return true;
+	}
+	
+	private BSTNode<E> addHelper(E arg0, BSTNode<E> pointer) {
+		//create a new node and make it the root if the tree is empty
+		if (root == null) {
+			size += 1; 
+			return new BSTNode<E>(arg0);
+		}
+		
+		//don't allow equal elements; 
+		if (pointer.data.equals(arg0)) {
+			return root;
+		}
+		else if (root.data.compareTo(arg0) < 0) {
+			root.right = addHelper(arg0, root.right);
+		}
+		else {
+			root.left = addHelper(arg0, root.left);
+		}
+		
+		return root;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends E> arg0) {
-		// TODO Auto-generated method stub
-		return false;
-		
+		throw new UnsupportedOperationException("Unsupported Operation");
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		root = null; 
 	}
-
+	/**
+	 * @param Object arg0
+	 * @return boolean. true if the Object is found, false if it is not (by calling the recursive 
+	 * method containsHelper
+	 * @throws ClassCastException 
+	 */
 	@Override
-	public boolean contains(Object arg0) {
-		BSTNode<E> current = root; 
+	public boolean contains(Object arg0) throws ClassCastException{
+		if (arg0 == null || root == null) {
+			return false; 
+		}
 		
+		E arg0Cast = (E)arg0; //this line might throw an exception 
+		BSTNode<E> pointer = root; 
 		
+		return containsHelper(arg0Cast, pointer);
+	}
+	
+	/**
+	 * @param E arg0
+	 * @param BSTNode<E> pointer
+	 * @return returns true if the element is found, determines if it needs to go left or right 
+	 * and then calls itself again until it is null. If it reaches null, the element was not
+	 * found and it will return false. 
+	 */
+	private boolean containsHelper(E arg0, BSTNode<E> pointer) {
+		//if the element is never found 
+		if (pointer == null) {
+			return false; 
+		}
 		
-//		MyIterator containsIterator = new MyIterator();
-//		boolean isFound = false; 
-//		
-//		//use iterator to iterate through the list and search for the element
-//		while (containsIterator.hasNext()) 
-//		{
-//			if (containsIterator.next().equals(arg0)) 
-//			{
-//				isFound = true; 
-//			}
-//		}
-		
-		return false;
+		if (arg0.compareTo(pointer.data) < 0) {
+			return containsHelper(arg0, pointer.right);
+		} 
+		else if (arg0.compareTo(pointer.data) > 0) {
+			return containsHelper(arg0, pointer.left);
+		}
+		else {
+			return true; 
+		}
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean isFound = true; 
+		
+		for (Object item : arg0) 
+		{
+			if (this.contains(item) == false) 
+			{
+				isFound = false;
+			}
+		}
+		
+		return isFound;
 	}
 	
 	@Override
 	public boolean equals(Object o) {
-		return false;
+		boolean isEqual = true; 
+		
+		if (o instanceof BST<?>) {
+			MyIterator<E> thisBST = this.iterator();
+			MyIterator<E> oBST = ((BST) o).iterator();
+			
+			if (this.size() != ((BST<E>) o).size()) {
+				return false;
+			}
+			
+			while (thisBST.hasNext()) {
+				if (thisBST.next().equals(oBST.next())) {
+					continue;
+				}
+				else {
+					isEqual = false;
+					break;
+				}
+			}
+		}
+		
+		return isEqual;
 	}
 
+	public int hashCode() {
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
+	
 	/**
 	 * 
 	 * @param none
@@ -218,70 +395,153 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 	}
 	
 	@Override
-	public Iterator<E> iterator() {
-		return null;
+	public MyIterator<E> iterator() {
+		return new MyIterator<E>();
 	}
-//		E[] inorderArray = (E[])new Object[size];
-//		int index = 0; 
-//		
-//		iteratorHelper(root, inorderArray, index); 
-//		
-//		return new BSTIterator<E>(inorderArray);
-//	}
-//	
-//	private void iteratorHelper(BSTNode<E> root, E[] inorderArray, int index) {
-//		if (root == null) {
-//			return; 
-//		}
-//		
-//		iteratorHelper(root.left, inorderArray, index); 
-//		
-//		inorderArray[index++] = root.getData();
-//		
-//		iteratorHelper(root.right, inorderArray, index);
-//	}
 	
-	public Iterator<E> preorderIterator() {
-		return null;
+	public PreorderBSTIterator<E> preorderIterator() {
+		return new PreorderBSTIterator<E>();
 	}
 	
 	public Iterator<E> postorderIterator() {
-		return null;
+		return new PostorderBSTIterator<E>();
 	}
 
 	@Override
 	public boolean remove(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		if (arg0 == null) {
+			return false; 
+		}
+		
+		E arg0Cast = (E)arg0; //this throws an exception
+		BSTNode<E> pointer = root; 
+		
+		return true;
 	}
 
+//	private boolean removeHelper(E arg0, BSTNode<E> pointer) {
+//		s
+//	}
+	
 	@Override
 	public boolean removeAll(Collection<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException("Unsupported Operation");
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException("Unsupported Operation");
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		MyIterator<E> toArrayIterator = this.iterator();
+		
+		@SuppressWarnings("unchecked")
+		Object[] returnArray = (E[])new Object[size];
+		int index = 0; 
+		
+		while (toArrayIterator.hasNext()) {
+			returnArray[index] = toArrayIterator.next();
+			index++;
+		}
+		
+		return returnArray;
 	}
 
 	@Override
 	public <T> T[] toArray(T[] arg0) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	//Returns the least element in this set greater than or equal to the given element, 
+	//or null if there is no such element.
+	public E ceiling (E e) {
+		MyIterator<E> ceilingIterator = this.iterator();
+		
+		while (ceilingIterator.hasNext()) {
+			E thisElement = ceilingIterator.next();
+			if (thisElement.compareTo(e) >= 0) {
+				return thisElement;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Object clone() {
+		return null;
+	}
+	
+	public E first() {
+		if (this.isEmpty()) {
+			return null;
+		}
+		BSTNode<E> pointer = root;
+		
+		while (pointer.left != null) {
+			pointer = pointer.left;
+		}
+		
+		return pointer.data;
+	}
+	
+	public E floor(E e) {
+		MyIterator<E> floorIterator = this.iterator();
+		
+		while (floorIterator.hasNext()) {
+			E thisElement = floorIterator.next();
+			if (thisElement.compareTo(e) <= 0) {
+				return thisElement;
+			}
+		}
+		
+		return null;
+	}
+	
+	public E higher(E e) {
+		MyIterator<E> higherIterator = this.iterator();
+		
+		while (higherIterator.hasNext()) {
+			E thisElement = higherIterator.next();
+			if (thisElement.compareTo(e) > 0) {
+				return thisElement;
+			}
+		}
+		
+		return null;
+	}
+	
+	public E last() {
+		if (this.isEmpty()) {
+			return null;
+		}
+		return lastHelper(root);
+	}
+	
+	private E lastHelper(BSTNode<E> pointer) {
+		if (pointer.right == null) {
+			return pointer.data;
+		}
+		
+		return lastHelper(pointer.right);
+	}
+	
+	public E lower(E e) {
+		MyIterator<E> lowerIterator = this.iterator();
+		
+		while (lowerIterator.hasNext()) {
+			E thisElement = lowerIterator.next();
+			if (thisElement.compareTo(e) < 0) {
+				return thisElement;
+			}
+		}
 		return null;
 	}
 }

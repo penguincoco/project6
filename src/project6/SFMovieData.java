@@ -52,7 +52,7 @@ public class SFMovieData {
 			System.exit(1);
 		}
 		
-		MovieList linkedListOfMovies = new MovieList(); 
+		MovieList movieBST = new MovieList(); 
 		inMovies.nextLine(); 
 		
 		while (inMovies.hasNext()) 
@@ -149,27 +149,31 @@ public class SFMovieData {
 			Movie thisMovie = new Movie(movieTitle, movieYearInt, movieDirector, movieWriter, actor1, actor2, actor3);
 			Movie alreadyInListMovie = null;
 			
-			if (linkedListOfMovies.size() == 0) {
-				linkedListOfMovies.add(thisMovie);
+			if (movieBST.size() == 0) {
+				movieBST.add(thisMovie);
 			}
-			else if (linkedListOfMovies.size() != 0) {
-//				for (Movie m : linkedListOfMovies) {
-				for(int i =0; i<linkedListOfMovies.size(); i++) {
-					if (linkedListOfMovies.get(i).equals(thisMovie)) {
-						alreadyInListMovie = linkedListOfMovies.get(i);
+			else if (movieBST.size() != 0) {
+				MovieList.MyIterator<Movie> currentMovies = movieBST.iterator();
+				
+				while (currentMovies.hasNext()) {
+					Movie tempMovie = currentMovies.next();
+					if (tempMovie.equals(thisMovie)) {
+						alreadyInListMovie = tempMovie;
 						break;
 					}
 				}
+				
 				if (alreadyInListMovie != null) {
 					Location currentLocation = new Location(movieLocation, movieFunFact);
 					alreadyInListMovie.addLocation(currentLocation);
 				}
 				else {
-					linkedListOfMovies.add(thisMovie);
+					movieBST.add(thisMovie);
 					Location currentLocation = new Location(movieLocation, movieFunFact);
 					thisMovie.addLocation(currentLocation);
 				}
 			}
+			
 		}
 
 		//create a scanner to read user input
@@ -207,7 +211,7 @@ public class SFMovieData {
 			
 			//this doesn't ignore case, fix it!
 			if (searchType.equalsIgnoreCase("title")) {
-				MovieList moviesWithQuery = linkedListOfMovies.getMatchingTitles(query);
+				MovieList moviesWithQuery = movieBST.getMatchingTitles(query);
 				if (moviesWithQuery == null || moviesWithQuery.size() == 0) {
 					System.out.println("No matches found. Try again");
 					continue;
@@ -225,7 +229,7 @@ public class SFMovieData {
 			//if user enters actor, iterate through the list of movies and the list of actors 
 			//within each movie to find the ones that feature the actor specified by the user
 			else if (searchType.equalsIgnoreCase("actor")) {
-				MovieList moviesWithQuery = linkedListOfMovies.getMatchingActor(query);
+				MovieList moviesWithQuery = movieBST.getMatchingActor(query);
 				if (moviesWithQuery == null || moviesWithQuery.size() == 0) {
 					System.out.println("No matches found. Try again");
 					continue;
