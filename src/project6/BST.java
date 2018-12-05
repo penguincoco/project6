@@ -6,13 +6,42 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.stream.Stream;
 
-public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> {
+public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>, Cloneable {
 	private int size;
 	private BSTNode<E> root;
 	private boolean found;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CloneNotSupportedException {
+		BST<Integer> intBST = new BST<Integer>();
+		
 		System.out.println("running BST");
+		intBST.add(10);
+		intBST.add(6);
+		intBST.add(14);
+		intBST.add(3);
+		intBST.add(7);
+		intBST.add(12);
+		intBST.add(15);
+		intBST.add(1);
+		intBST.add(4);
+		intBST.add(8);
+		
+//		System.out.println(intBST.toStringTreeFormat());
+		
+		intBST.remove(6);
+		
+//		System.out.println(intBST.toStringTreeFormat());
+		
+		intBST.remove(4); 
+		
+		System.out.println(intBST.toStringTreeFormat());
+//		
+//		System.out.println(intBST.toString());
+		
+		BST<Integer> cloneTree = (BST<Integer>)intBST.clone();
+		
+		System.out.println(intBST.equals(cloneTree)); 
+		System.out.println(cloneTree.toStringTreeFormat());
 	}
 	
 	//private, internal BSTNode class
@@ -195,17 +224,19 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 			return "";
 		}
 		
-		return toStringHelper(root);
+		MyIterator<E> toStringIterator = this.iterator();
+		
+		StringBuilder returnStringBuilder = new StringBuilder();
+		
+		while (toStringIterator.hasNext()) {
+			returnStringBuilder.append(toStringIterator.next().toString() + ", ");
+		}
+		
+		String returnString = returnStringBuilder.substring(0, returnStringBuilder.length() - 2);
+		
+		return returnString.toString();
 	}
 	
-	private String toStringHelper(BSTNode<E> pointer) {
-		if (pointer == null) {
-			return "";
-		}
-		else {
-			return toStringHelper(pointer.left) + toStringHelper(pointer.right);
-		}
-	}
 	//don't forget to document that this was taken from the specs
 	public String toStringTreeFormat() {
 		StringBuilder s = new StringBuilder();
@@ -554,8 +585,26 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E> 
 		return null;
 	}
 	
-	public Object clone() {
-		return null;
+	public Object clone() throws CloneNotSupportedException {
+		BST<E> cloneTree = (BST<E>) super.clone();
+		cloneTree = new BST<E>();
+		cloneTree.root = cloneHelper(this.root);
+		cloneTree.size = this.size;
+		
+		return cloneTree;
+	}
+	
+	private BSTNode<E> cloneHelper(BSTNode<E> pointer) {
+		if (pointer == null) {
+			return null; 
+		}
+		
+		BSTNode<E> cloneNode = new BSTNode<E>(pointer.data); 
+		
+		cloneNode.left = cloneHelper(pointer.left);
+		cloneNode.right = cloneHelper(pointer.right);
+		
+		return cloneNode;
 	}
 	
 	public E first() {

@@ -33,9 +33,12 @@ public class MovieList extends BST<Movie> {
 		MovieList matchingMovieTitles = new MovieList();
 		
 		//iterate through the movies in the list
-		for (Movie m : this ) {
-			if (m.getTitle().toLowerCase().contains(movieName.toLowerCase())) {
-				matchingMovieTitles.add(m);
+		MyIterator<Movie> movieIterator = this.iterator();
+		
+		while (movieIterator.hasNext()) {
+			Movie thisMovie = movieIterator.next();
+			if (thisMovie.getTitle().toLowerCase().contains(movieName.toLowerCase())) {
+				matchingMovieTitles.add(thisMovie);
 			}
 		}
 		
@@ -70,10 +73,14 @@ public class MovieList extends BST<Movie> {
 		//create a list to store the matching actors found 
 		MovieList matchingActors = new MovieList();
 		
-		for (Movie m : this) {
-			for (Actor a : m.getActors()) {
-				if (a.getActorName().toLowerCase().contains(actorName.toLowerCase())) {
-					matchingActors.add(m);
+		MyIterator<Movie> actorIterator = this.iterator();
+		
+		while (actorIterator.hasNext()) {
+			Movie thisMovie = actorIterator.next();
+			
+			for (int i = 0; i < thisMovie.getActors().size(); i++) {
+				if (thisMovie.getActors().get(i).getActorName().toLowerCase().contains(actorName.toLowerCase())){
+					matchingActors.add(thisMovie);
 				}
 			}
 		}
