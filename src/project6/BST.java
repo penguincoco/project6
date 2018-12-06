@@ -17,13 +17,6 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 	private int size;
 	private BSTNode<E> root;
 	
-	public static void main(String[] args) {
-		BST<Integer> tree = new BST<>();
-		tree.add(1);
-		
-		System.out.println(tree.first());
-	}
-	
 	/**
 	 * Nested class for the Binary Search Tree Node. The E generic type has the restriction that anything that inherits
 	 * from BST also has to extend Comparable interface. Each node stores a reference to its own data, its left child 
