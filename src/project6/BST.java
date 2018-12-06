@@ -1,49 +1,21 @@
 package project6;
 
+/**
+ * This is a self-implemented generic Binary Search Tree that has various methods that can be called on it. 
+ * This implementation implements the Collection interface, Iterable interface and Cloneable interface.
+ * The class has an internal class for Binary Search Tree Node (BSTNode) and three Iterator classes (Inorder, Preorder, Postorder)
+ *   
+ * @author Sammy Chuang
+ * @version 2018.12.05
+ */
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Stack;
-import java.util.stream.Stream;
 
 public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>, Cloneable {
 	private int size;
 	private BSTNode<E> root;
-	private boolean found;
-	
-	public static void main(String[] args) throws CloneNotSupportedException {
-		BST<Integer> intBST = new BST<Integer>();
-		
-		System.out.println("running BST");
-		intBST.add(10);
-		intBST.add(6);
-		intBST.add(14);
-		intBST.add(3);
-		intBST.add(7);
-		intBST.add(12);
-		intBST.add(15);
-		intBST.add(1);
-		intBST.add(4);
-		intBST.add(8);
-		
-//		System.out.println(intBST.toStringTreeFormat());
-		
-		intBST.remove(6);
-		
-//		System.out.println(intBST.toStringTreeFormat());
-		
-		intBST.remove(4); 
-		
-		System.out.println(intBST.toStringTreeFormat());
-//		
-//		System.out.println(intBST.toString());
-		
-		BST<Integer> cloneTree = (BST<Integer>)intBST.clone();
-		
-		System.out.println(intBST.equals(cloneTree)); 
-		System.out.println(cloneTree.toStringTreeFormat());
-	}
-	
 	//private, internal BSTNode class
 	static class BSTNode<E extends Comparable<E>> implements Comparable<BSTNode<E>> {
 		private E data; 
@@ -149,7 +121,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 		}
 	}
 	
-	class MyIterator<E extends Comparable<E>> implements Iterator<E> {
+	class MyIterator implements Iterator<E> {
 		ArrayList<E> iteratorArrayList;
 		int index = 0; 
 		
@@ -224,7 +196,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 			return "";
 		}
 		
-		MyIterator<E> toStringIterator = this.iterator();
+		MyIterator toStringIterator = this.iterator();
 		
 		StringBuilder returnStringBuilder = new StringBuilder();
 		
@@ -385,8 +357,8 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 		boolean isEqual = true; 
 		
 		if (o instanceof BST<?>) {
-			MyIterator<E> thisBST = this.iterator();
-			MyIterator<E> oBST = ((BST) o).iterator();
+			MyIterator thisBST = this.iterator();
+			MyIterator oBST = ((BST) o).iterator();
 			
 			if (this.size() != ((BST<E>) o).size()) {
 				return false;
@@ -426,8 +398,8 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 	}
 	
 	@Override
-	public MyIterator<E> iterator() {
-		return new MyIterator<E>();
+	public MyIterator iterator() {
+		return new MyIterator();
 	}
 	
 	public PreorderBSTIterator<E> preorderIterator() {
@@ -442,6 +414,25 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 	public boolean remove(Object arg0) {
 		//pointer is what we have to remove
 		//previous is parent of pointer
+		
+		if (root.data.equals(arg0) && this.size() == 1) {
+			this.clear();
+			return true;
+		}
+		
+		if (root.data.equals(arg0) && this.size() == 2) {
+			if (root.left == null) {
+				root = root.right;
+				size--;
+				return true;
+			}
+			else {
+				root = root.left; 
+				size--;
+				return true;
+			}
+		}
+		
 		BSTNode<E> previous = root;
 		BSTNode<E> pointer = root;
 		while(!pointer.data.equals(arg0)) {
@@ -455,7 +446,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 			}
 		}
 		
-		//LOTS OF THIS STUFF SHOULD JUST BE PREVIOUS, NOT POINTER! POINTER IS WHAT WE REMOVE
+		//checks if two children
 		if (pointer.left != null && pointer.right != null) {
 			//left stuff to give back and right stuff to give back
 			BSTNode<E> leftChild = pointer.left;
@@ -479,6 +470,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 				pointer.left = pointer.left.left;
 				//give pointer right
 				pointer.right = rightChild;
+				size--;
 				return true;
 			}
 			else {
@@ -490,32 +482,46 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 				pointer.left = leftChild;
 				pointer.right = rightChild;
 				//give back left and right 
+				size--;
 				return true;
 			}
 		}
+		
+		//0 or 1 children case
 		else {
-			if (previous.left == null) {
-				if (pointer.left == null) {
-					previous.right = pointer.right;
+			//discern where pointer is compared to parent(previous) 
+			if (previous.left != null && previous.left.data.compareTo(pointer.data) == 0) {
+				//pointer is left
+				if (pointer.left == null && pointer.right == null) {
+					previous.left = null;
 					size--;
 					return true;
 				} 
-				
+				else if (pointer.left == null) {
+					previous.left = pointer.right;
+					size--;
+					return true;
+				}
 				else {
-					previous.right = pointer.left;
+					previous.left = pointer.left;
 					size--;
 					return true;
 				}
 			} 
-			
 			else {
-				if (pointer.left == null) {
-					previous.left = pointer.right;
+				//else if (previous.right.data.compareTo(pointer.data) == 0) {}
+				if (pointer.left == null && pointer.right == null) {
+					previous.right = null;
 					size--;
 					return true;
 				} 
+				else if (pointer.left == null) {
+					previous.right = pointer.right;
+					size--;
+					return true;
+				}
 				else {
-					previous.left = pointer.left;
+					previous.right = pointer.left;
 					size--;
 					return true;
 				}
@@ -541,7 +547,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 
 	@Override
 	public Object[] toArray() {
-		MyIterator<E> toArrayIterator = this.iterator();
+		MyIterator toArrayIterator = this.iterator();
 		
 		Object[] returnArray = new Object[size];
 		int index = 0; 
@@ -555,15 +561,29 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 	}
 
 	@Override
-	public <T> T[] toArray(T[] arg0) {
+	public <E> E[] toArray (E[] arg0) {
+		if (arg0 == null) {
+			return null;
+		}
 		//This was taken from the Java LinkedList implementation 
 		 if (arg0.length < size) 
 		 {
-			 arg0 = (T[])java.lang.reflect.Array.newInstance(arg0.getClass().getComponentType(), size);
+			 arg0 = (E[])java.lang.reflect.Array.newInstance(arg0.getClass().getComponentType(), size);
 		 }
 		 //end of what was taken from Java LinkedList implementation 
 		 
-		return null;
+		 MyIterator toArrayIterator = this.iterator();
+		 
+		 int index = 0;
+		 
+		 while (toArrayIterator.hasNext()) {
+			 E thisData = (E)toArrayIterator.next();
+//			 System.out.println(thisData);
+			 arg0[index] = thisData;
+			 index++;
+		 }
+		 
+		return arg0;
 	}
 	
 	//Returns the least element in this set greater than or equal to the given element, 
@@ -573,7 +593,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 			return null;
 		}
 		
-		MyIterator<E> ceilingIterator = this.iterator();
+		MyIterator ceilingIterator = this.iterator();
 		
 		while (ceilingIterator.hasNext()) {
 			E thisElement = ceilingIterator.next();
@@ -625,7 +645,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 			return null;
 		}
 		
-		MyIterator<E> floorIterator = this.iterator();
+		MyIterator floorIterator = this.iterator();
 		
 		while (floorIterator.hasNext()) {
 			E thisElement = floorIterator.next();
@@ -642,7 +662,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 			return null;
 		}
 		
-		MyIterator<E> higherIterator = this.iterator();
+		MyIterator higherIterator = this.iterator();
 		
 		while (higherIterator.hasNext()) {
 			E thisElement = higherIterator.next();
@@ -674,7 +694,7 @@ public class BST<E extends Comparable<E>> implements Collection<E>, Iterable<E>,
 			return null;
 		}
 		
-		MyIterator<E> lowerIterator = this.iterator();
+		MyIterator lowerIterator = this.iterator();
 		
 		while (lowerIterator.hasNext()) {
 			E thisElement = lowerIterator.next();

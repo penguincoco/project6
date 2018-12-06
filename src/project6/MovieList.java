@@ -33,7 +33,7 @@ public class MovieList extends BST<Movie> {
 		MovieList matchingMovieTitles = new MovieList();
 		
 		//iterate through the movies in the list
-		MyIterator<Movie> movieIterator = this.iterator();
+		MyIterator movieIterator = this.iterator();
 		
 		while (movieIterator.hasNext()) {
 			Movie thisMovie = movieIterator.next();
@@ -73,7 +73,7 @@ public class MovieList extends BST<Movie> {
 		//create a list to store the matching actors found 
 		MovieList matchingActors = new MovieList();
 		
-		MyIterator<Movie> actorIterator = this.iterator();
+		MyIterator actorIterator = this.iterator();
 		
 		while (actorIterator.hasNext()) {
 			Movie thisMovie = actorIterator.next();

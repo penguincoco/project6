@@ -153,7 +153,7 @@ public class SFMovieData {
 				movieBST.add(thisMovie);
 			}
 			else if (movieBST.size() != 0) {
-				MovieList.MyIterator<Movie> currentMovies = movieBST.iterator();
+				MovieList.MyIterator currentMovies = movieBST.iterator();
 				
 				while (currentMovies.hasNext()) {
 					Movie tempMovie = currentMovies.next();
