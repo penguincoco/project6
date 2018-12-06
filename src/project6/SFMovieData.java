@@ -1,8 +1,8 @@
 package project6;
 
 /**
- * This class extends the (self-written) LinkedList class to create Linked Lists that
- * hold Movies.
+ * The main method class that reads data in from a csv, stores information in to Movie object and allows
+ * a user to enter prompts searching for movies whose titles or actors contain a certain keyword.
  * 
  * @author Sammy Chuang
  * @version 2018.12.05
@@ -12,10 +12,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-//requirements: 
-//One command line argument
-//User can input either ACTOR or TITLE (case INSENSITIVE) 
 
 public class SFMovieData {
 	@SuppressWarnings("unused")
@@ -124,11 +120,9 @@ public class SFMovieData {
 				try 
 				{
 					actor2 = new Actor(currentMovie.get(9));
-					//listOfActors.add(actor2);
 				}
 				catch (IllegalArgumentException e) 
 				{
-					//actor3 = null;
 				}
 			}
 			
@@ -138,20 +132,23 @@ public class SFMovieData {
 				try 
 				{
 					actor3 = new Actor(currentMovie.get(10));
-					//listOfActors.add(actor3);
 				}
 				catch (IllegalArgumentException e) 
 				{
-					//actor3 = null;
 				}
 			}
 			
+			//create a new Movie with the object just read in
+			//create a variable to hold the movie if it is already in the list and the make updates to its locations
 			Movie thisMovie = new Movie(movieTitle, movieYearInt, movieDirector, movieWriter, actor1, actor2, actor3);
 			Movie alreadyInListMovie = null;
 			
+			//if the tree is size is 0, add the movie
 			if (movieBST.size() == 0) {
 				movieBST.add(thisMovie);
 			}
+			
+			//otherwise, search through the tree and if the movie already exists, set it equal to alreadyInListMovie
 			else if (movieBST.size() != 0) {
 				MovieList.MyIterator currentMovies = movieBST.iterator();
 				
@@ -163,10 +160,12 @@ public class SFMovieData {
 					}
 				}
 				
+				//if a movie was found, just add the location
 				if (alreadyInListMovie != null) {
 					Location currentLocation = new Location(movieLocation, movieFunFact);
 					alreadyInListMovie.addLocation(currentLocation);
 				}
+				//otherwise, add the whole new movie to the tree! 
 				else {
 					movieBST.add(thisMovie);
 					Location currentLocation = new Location(movieLocation, movieFunFact);
@@ -192,15 +191,14 @@ public class SFMovieData {
 			//end program if the user enters quit
 			if (userInput.equalsIgnoreCase("quit")) 
 			{
-				//System.out.println("Quitting");
 				break;
 			}
 			
 			//split the string along spaces to detect what the first word is:
-			//movie title? or actor? 
+			//title? or actor? 
 			String[] splitInput = userInput.split(" ", 2);
 			
-			
+			//it will be a minimum two strings because of the query and then the keyword
 			if (splitInput.length < 2) {
 				System.out.println("This is not a valid query. Try again.");
 				continue;
@@ -209,17 +207,20 @@ public class SFMovieData {
 			String searchType = splitInput[0].toLowerCase();
 			String query = splitInput[1].toLowerCase();
 			
-			//this doesn't ignore case, fix it!
+			//let the user know if they entered an invalid search query
+			if (!searchType.equals("title") && !searchType.equals("actor")) {
+				System.out.println("This is not a valid query. Try again.");
+				continue;
+			}
+			
+			//search type is movie; search through the entire movieBST and get the list of movies that have the keyword
+			//in the title 
 			if (searchType.equalsIgnoreCase("title")) {
 				MovieList moviesWithQuery = movieBST.getMatchingTitles(query);
 				if (moviesWithQuery == null || moviesWithQuery.size() == 0) {
 					System.out.println("No matches found. Try again");
 					continue;
 				}
-				
-//				for (int i = 0; i < moviesWithQuery.size(); i++) {
-//					System.out.println(moviesWithQuery.get(i).toString());
-//				}
 				
 				for (Movie movie : moviesWithQuery) {
 					System.out.println(movie.toString());

@@ -1,8 +1,8 @@
 package project6;
 
 /**
- * This class extends the (self-written) LinkedList class to create Linked Lists that
- * hold Movies.
+ * This class extends the self-implemented BST class to create a Binary Search Tree that
+ * hold Movies in the Nodes. 
  * 
  * @author Sammy Chuang
  * @version 2018.12.05
@@ -32,7 +32,7 @@ public class MovieList extends BST<Movie> {
 		//create a MovieList to hold all of the movies that match the movieName (parameter)
 		MovieList matchingMovieTitles = new MovieList();
 		
-		//iterate through the movies in the list
+		//iterate through the movies in the list and retrieve those whose title has the movieName keyword in it
 		MyIterator movieIterator = this.iterator();
 		
 		while (movieIterator.hasNext()) {
@@ -75,11 +75,14 @@ public class MovieList extends BST<Movie> {
 		
 		MyIterator actorIterator = this.iterator();
 		
+		//iterate through the list of actors for each movie and retrieve the movies that have an actor whose name matches 
+		//the actorName user input
 		while (actorIterator.hasNext()) {
 			Movie thisMovie = actorIterator.next();
 			
 			for (int i = 0; i < thisMovie.getActors().size(); i++) {
 				if (thisMovie.getActors().get(i).getActorName().toLowerCase().contains(actorName.toLowerCase())){
+					//add the movie to the list of moies with a found actor 
 					matchingActors.add(thisMovie);
 				}
 			}
